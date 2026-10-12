@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QRlink | 간편하고 빠른 URL QR코드 생성기</title>
+  <meta name="description" content="URL을 입력하면 중앙에 맞춤형 QR코드가 생성되고 클릭 한 번으로 고화질 JPG 이미지로 다운로드할 수 있는 QR코드 생성 서비스입니다.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="img/url2qr.png">
+  
+  <!-- Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Ambient Background Mesh -->
+  <div class="ambient-mesh" aria-hidden="true">
+    <div class="mesh-blob blob-1"></div>
+    <div class="mesh-blob blob-2"></div>
+    <div class="mesh-blob blob-3"></div>
+  </div>
+
+  <!-- App Shell -->
+  <div class="app-layout" id="appLayout">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-brand-group">
+        <a href="#" class="brand-link" id="brandLink" title="QRlink 처음으로 / 새로 만들기">
+          <img src="img/url2qr.png" alt="QRlink 로고" class="brand-logo" id="brandLogo">
+        </a>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="pulse-dot"></span>
+          <span>URL to QR Code</span>
+        </span>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="header-btn" id="btnHeaderPaste" title="클립보드 주소 바로 입력">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          </svg>
+          <span class="btn-label-desktop">클립보드 붙여넣기</span>
+        </button>
+        <button type="button" class="header-btn" id="btnHelp" aria-label="이용 팁">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span>사용 팁</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-workspace" id="mainWorkspace">
+
+      <!-- Center Content Area: In initial state, holds Hero + Input in unified flex flow -->
+      <div class="workspace-stage" id="workspaceStage">
+        
+        <!-- Hero Intro (Visible in Initial State) -->
+        <section class="hero-intro" id="heroIntro">
+          <div class="hero-badge">
+            <span class="hero-badge-icon">⚡</span>
+            <span>간편한 원클릭 QR 생성 및 다운로드</span>
+          </div>
+          <h1 class="hero-title">
+            <span class="gradient-text">URL을 바로 QR코드로</span> 변환하세요
+          </h1>
+          <p class="hero-desc">주소를 입력하고 확인을 누르면 정중앙에 고화질 QR코드가 즉시 생성됩니다.</p>
+        </section>
+
+        <!-- Center QR Code Stage (Revealed when QR is generated) -->
+        <section class="qr-stage" id="qrStage" aria-live="polite" aria-hidden="true">
+          <div class="qr-card-wrapper" id="qrCardWrapper">
+            
+            <!-- Downloadable QR Code Display Card -->
+            <div class="qr-card" id="qrCard" role="button" tabindex="0" title="클릭하여 JPG 다운로드" aria-label="생성된 QR코드. 클릭하여 JPG 이미지로 다운로드">
+              <div class="qr-canvas-box" id="qrCanvasBox">
+                <canvas id="qrCanvas" width="280" height="280"></canvas>
+              </div>
+              
+              <!-- Hover / Focus Overlay -->
+              <div class="qr-overlay" id="qrOverlay">
+                <div class="overlay-badge">
+                  <svg class="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>JPG 다운로드</span>
+                </div>
+              </div>
+
+              <!-- Corner Accents -->
+              <span class="corner-accent top-left"></span>
+              <span class="corner-accent top-right"></span>
+              <span class="corner-accent bottom-left"></span>
+              <span class="corner-accent bottom-right"></span>
+            </div>
+
+            <!-- QR Info & Quick Actions -->
+            <div class="qr-meta-bar" id="qrMetaBar">
+              <div class="qr-url-chip" id="qrUrlChip" title="연결된 URL">
+                <svg class="icon-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <span class="qr-url-text" id="qrUrlText">https://example.com</span>
+              </div>
+
+              <div class="qr-action-buttons">
+                <button type="button" class="btn-action" id="btnCopyUrl" title="URL 주소 복사">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>복사</span>
+                </button>
+                
+                <button type="button" class="btn-action btn-primary-action" id="btnDownloadJpg" title="JPG 파일 다운로드">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>JPG 저장</span>
+                </button>
+              </div>
+            </div>
+
+            <p class="qr-guide-hint">
+              <svg class="icon-hint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              QR코드를 직접 클릭하면 1024×1024 고화질 JPG로 저장됩니다
+            </p>
+          </div>
+        </section>
+
+        <!-- Docking URL Input Section -->
+        <section class="url-dock-container" id="urlDockContainer">
+          <form class="url-dock-form" id="urlForm" autocomplete="off" novalidate>
+            
+            <div class="input-glow-wrapper">
+              <div class="input-prefix-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+
+              <input 
+                type="text" 
+                id="urlInput" 
+                class="url-input" 
+                placeholder="QR코드로 만들 URL을 입력하세요 (예: naver.com)" 
+                aria-label="QR코드 생성 URL 입력"
+                spellcheck="false"
+                required
+              >
+
+              <button type="button" class="btn-clear" id="btnClear" title="내용 지우기" aria-label="입력 내용 지우기">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+
+              <button type="submit" class="btn-submit" id="btnSubmit">
+                <span class="btn-text">확인</span>
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Quick Samples & Utilities (Shown in initial centered state) -->
+            <div class="quick-samples" id="quickSamples">
+              <span class="sample-label">빠른 예시:</span>
+              <button type="button" class="sample-chip" data-url="https://www.google.com">Google</button>
+              <button type="button" class="sample-chip" data-url="https://www.youtube.com">YouTube</button>
+              <button type="button" class="sample-chip" data-url="https://www.naver.com">Naver</button>
+              <button type="button" class="sample-chip btn-paste" id="btnPaste">
+                <svg class="icon-chip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                </svg>
+                붙여넣기
+              </button>
+            </div>
+
+            <!-- Reset / Return button when docked at bottom -->
+            <div class="bottom-controls" id="bottomControls">
+              <button type="button" class="btn-reset" id="btnReset">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+                <span>새로운 URL 입력 (처음으로)</span>
+              </button>
+            </div>
+
+          </form>
+        </section>
+
+      </div>
+
+    </main>
+
+    <!-- Modal: Help / Tips -->
+    <dialog class="modal-dialog" id="helpModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 class="modal-title">QRlink 사용 안내</h2>
+          <button type="button" class="modal-close" id="btnCloseHelp" aria-label="닫기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul class="tips-list">
+            <li>
+              <strong>1. URL 입력 및 자동 완성</strong>
+              <p>주소창에 <code>naver.com</code>처럼 입력해도 자동으로 <code>https://</code> 프로토콜을 안전하게 연결합니다.</p>
+            </li>
+            <li>
+              <strong>2. 간편한 하단 도킹</strong>
+              <p>확인을 누르면 입력창이 화면 하단으로 내려가 언제든지 URL을 수정하거나 새로 생성할 수 있습니다.</p>
+            </li>
+            <li>
+              <strong>3. 원클릭 JPG 다운로드</strong>
+              <p>화면 중앙의 QR코드를 클릭하면 선명한 고해상도(1024×1024) JPG 파일로 즉시 저장됩니다.</p>
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-ok" id="btnModalOk">확인</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer" aria-live="assertive">
+      <div class="toast" id="toast">
+        <span class="toast-icon" id="toastIcon"></span>
+        <span class="toast-message" id="toastMessage"></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- QR Code Engine -->
+  <script src="js/qrcode.min.js"></script>
+  <!-- Application Logic -->
+  <script src="js/app.js"></script>
+</body>
+</html>
